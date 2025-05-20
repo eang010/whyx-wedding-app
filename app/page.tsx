@@ -15,6 +15,7 @@ export default function Home() {
   // Refs for scrolling
   const countdownRef = useRef<HTMLDivElement>(null)
   const detailsRef = useRef<HTMLDivElement>(null)
+  const galleryRef = useRef<HTMLDivElement>(null)
 
   // Function to scroll to details section
   const scrollToDetails = () => {
@@ -24,6 +25,11 @@ export default function Home() {
   // Function to scroll back to countdown section
   const scrollToCountdown = () => {
     countdownRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  // Function to scroll to gallery section
+  const scrollToGallery = () => {
+    galleryRef.current?.scrollIntoView({ behavior: "smooth" })
   }
 
   return (
@@ -48,9 +54,16 @@ export default function Home() {
           {/* Countdown Timer */}
           <CountdownTimer targetDate={weddingDate} />
 
-          <div className="mt-8 flex justify-center">
+          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild className="bg-babyblue-dark hover:bg-babyblue text-white">
               <Link href="/rsvp">RSVP Now</Link>
+            </Button>
+            <Button
+              variant="outline"
+              className="bg-white/10 backdrop-blur-sm text-white border-white hover:bg-white/20"
+              onClick={scrollToGallery}
+            >
+              View Gallery
             </Button>
           </div>
         </div>
@@ -89,7 +102,7 @@ export default function Home() {
         </section>
 
         {/* Our Story Section with Carousel */}
-        <section className="w-full py-16 px-4 bg-blue-50">
+        <section ref={galleryRef} className="w-full py-16 px-4 bg-blue-50">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-serif mb-8">Our Story</h2>
             <p className="text-lg text-gray-700 mb-8">
