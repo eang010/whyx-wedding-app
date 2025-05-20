@@ -5,12 +5,12 @@ const galleryImages = [
   {
     src: "/images/1.jpg",
     alt: "Us at Greece",
-    caption: "Quite a view but you are the only view I need",
+    caption: "Quite a view, but you are my only view",
   },
   {
     src: "/images/2.jpg",
     alt: "Adventure in the Rockiespenguin",
-    caption: "You are my penguin",
+    caption: "Like penguins, let's be forever",
   },
   {
     src: "/images/3.jpg",
@@ -30,7 +30,7 @@ const galleryImages = [
   {
     src: "/images/6.jpg",
     alt: "Future with you",
-    caption: "Future with you",
+    caption: "Future with you and me",
   },
 ]
 
