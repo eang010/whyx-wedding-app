@@ -1,7 +1,4 @@
-import { useState } from "react"
 import Image from "next/image"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
 
 // Sample gallery images - replace with actual images
 const galleryImages = [
@@ -38,66 +35,45 @@ const galleryImages = [
 ]
 
 export default function ImageCarousel() {
-  const [currentIndex, setCurrentIndex] = useState(0)
-
-  const nextSlide = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === galleryImages.length - 1 ? 0 : prevIndex + 1
-    )
-  }
-
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? galleryImages.length - 1 : prevIndex - 1
-    )
-  }
-
   return (
-    <div className="relative w-full max-w-4xl mx-auto mt-8">
-      <div className="aspect-[3/2] relative overflow-hidden rounded-xl">
-        <Image
-          src={galleryImages[currentIndex].src}
-          alt={galleryImages[currentIndex].alt}
-          fill
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50" />
-        <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-          <p className="text-lg font-medium text-center">
-            {galleryImages[currentIndex].caption}
-          </p>
+    <div className="w-full max-w-4xl mx-auto mt-8">
+      <div className="relative overflow-hidden">
+        <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-6 -mb-6">
+          {galleryImages.map((image, index) => (
+            <div
+              key={index}
+              className="flex-none w-[85%] sm:w-[45%] md:w-[35%] snap-center pr-4"
+            >
+              <div className="relative aspect-[3/4] overflow-hidden rounded-xl group">
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                  <p className="text-sm font-medium text-center">
+                    {image.caption}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-
-      <Button
-        variant="outline"
-        size="icon"
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
-        onClick={prevSlide}
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </Button>
-
-      <Button
-        variant="outline"
-        size="icon"
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
-        onClick={nextSlide}
-      >
-        <ChevronRight className="h-4 w-4" />
-      </Button>
-
-      <div className="flex justify-center gap-2 mt-4">
-        {galleryImages.map((_, index) => (
-          <button
-            key={index}
-            className={`w-2 h-2 rounded-full transition-colors ${
-              index === currentIndex ? "bg-babyblue-dark" : "bg-gray-300"
-            }`}
-            onClick={() => setCurrentIndex(index)}
-          />
-        ))}
-      </div>
+      <style jsx global>{`
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .scrollbar-hide {
+          -ms-overflow-style: none;  /* IE and Edge */
+          scrollbar-width: none;  /* Firefox */
+        }
+      `}</style>
     </div>
   )
 } 
