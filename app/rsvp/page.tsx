@@ -18,7 +18,7 @@ export default function RsvpPage() {
           <div className="p-6 sm:p-10">
             <h1 className="text-3xl font-serif text-center mb-2">RSVP</h1>
             <p className="text-center text-gray-600 mb-8">
-              Please let us know if you'll be joining us on our special day by June 1, 2025.
+              Please let us know if you'll be joining us on our special day by November 9, 2025.
             </p>
 
             <RsvpForm />
