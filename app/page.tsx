@@ -4,6 +4,7 @@ import { useRef } from "react"
 import Link from "next/link"
 import CountdownTimer from "@/components/countdown-timer"
 import WeddingDetails from "@/components/wedding-details"
+import ImageCarousel from "@/components/image-carousel"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronUp } from "lucide-react"
 
@@ -47,16 +48,9 @@ export default function Home() {
           {/* Countdown Timer */}
           <CountdownTimer targetDate={weddingDate} />
 
-          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="mt-8 flex justify-center">
             <Button asChild className="bg-babyblue-dark hover:bg-babyblue text-white">
               <Link href="/rsvp">RSVP Now</Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="bg-white/10 backdrop-blur-sm text-white border-white hover:bg-white/20"
-            >
-              <Link href="/gallery">View Gallery</Link>
             </Button>
           </div>
         </div>
@@ -94,7 +88,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Brief About Section */}
+        {/* Our Story Section with Carousel */}
         <section className="w-full py-16 px-4 bg-blue-50">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-serif mb-8">Our Story</h2>
@@ -102,9 +96,7 @@ export default function Home() {
               We met four years ago at a coffee shop and had a coffee & bagel. What started as a chance encounter turned into the love
               of a lifetime. We're excited to celebrate our special day with our closest friends and family.
             </p>
-            <Button asChild className="bg-babyblue-dark hover:bg-babyblue">
-              <Link href="/gallery">See Our Journey</Link>
-            </Button>
+            <ImageCarousel />
           </div>
         </section>
       </div>
