@@ -1,5 +1,5 @@
-import { Volume2, VolumeX } from "lucide-react"
 import { useAudio } from "@/contexts/AudioContext"
+import { Volume2, VolumeX } from "lucide-react"
 
 export default function AudioControl() {
   const { isPlaying, toggleAudio } = useAudio()
@@ -11,9 +11,9 @@ export default function AudioControl() {
       aria-label={isPlaying ? "Mute audio" : "Unmute audio"}
     >
       {isPlaying ? (
-        <Volume2 className="h-6 w-6 text-white" />
+        <Volume2 className="h-6 w-6 text-gray-800" />
       ) : (
-        <VolumeX className="h-6 w-6 text-white" />
+        <VolumeX className="h-6 w-6 text-gray-800" />
       )}
     </button>
   )

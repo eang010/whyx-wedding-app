@@ -3,7 +3,6 @@
 import type React from "react"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
 import { AudioProvider } from "@/contexts/AudioContext"
 import AudioControl from "@/components/audio-control"
 
@@ -17,17 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <AudioProvider>
-            {children}
-            <AudioControl />
-          </AudioProvider>
-        </ThemeProvider>
+        <AudioProvider>
+          {children}
+          <AudioControl />
+        </AudioProvider>
       </body>
     </html>
   )
