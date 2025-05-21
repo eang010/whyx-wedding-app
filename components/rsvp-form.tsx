@@ -65,9 +65,11 @@ export default function RsvpForm() {
         redirect: 'follow',
         method: 'POST',
         headers: {
-          'Content-Type': 'text/plain;charset=utf-8',
+          'Content-Type': 'application/json',
+          'Origin': window.location.origin
         },
         mode: 'cors',
+        credentials: 'include',
         body: JSON.stringify(submitData)
       })
 
