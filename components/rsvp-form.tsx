@@ -4,7 +4,6 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { submitRsvp } from "@/app/actions/rsvp-actions"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -20,7 +19,10 @@ const formSchema = z.object({
   attending: z.enum(["yes", "no"], {
     required_error: "Please select whether you're attending.",
   }),
-  guestCount: z.string().optional(),
+  guestCount: z.string()
+    .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
+      message: "Please enter a valid number of guests.",
+    }),
   dietaryRestrictions: z.string().optional(),
   message: z.string().optional(),
 })
@@ -36,7 +38,7 @@ export default function RsvpForm() {
       name: "",
       email: "",
       attending: "yes",
-      guestCount: "1",
+      guestCount: "0",
       dietaryRestrictions: "",
       message: "",
     },
@@ -46,19 +48,59 @@ export default function RsvpForm() {
     setIsSubmitting(true)
 
     try {
-      await submitRsvp(data)
+      const GOOGLE_SCRIPT_URL = process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL
+
+      if (!GOOGLE_SCRIPT_URL) {
+        throw new Error("Google Script URL is not configured")
+      }
+
+      // Prepare the data
+      const submitData = {
+        timestamp: new Date().toISOString(),
+        ...data,
+        guestCount: Number(data.guestCount)
+      }
+
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
+        redirect: 'follow',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8',
+        },
+        mode: 'cors',
+        body: JSON.stringify(submitData)
+      })
+
+      // For Google Apps Script, we need to check the response differently
+      const result = await response.text()
+      let jsonResult
+      try {
+        jsonResult = JSON.parse(result)
+      } catch (e) {
+        // If response is not JSON, check if it contains success message
+        if (result.includes('success')) {
+          jsonResult = { status: 'success' }
+        } else {
+          throw new Error('Invalid response format')
+        }
+      }
+      
+      if (jsonResult.status === 'error') {
+        throw new Error(jsonResult.message || 'Failed to submit RSVP')
+      }
+
       toast({
         title: "RSVP Submitted",
         description: "Thank you for your response!",
       })
       form.reset()
     } catch (error) {
+      console.error('RSVP submission error:', error)
       toast({
         title: "Something went wrong",
         description: "Your RSVP could not be submitted. Please try again.",
         variant: "destructive",
       })
-      console.error(error)
     } finally {
       setIsSubmitting(false)
     }
@@ -109,7 +151,6 @@ export default function RsvpForm() {
                 required: "Please select an option",
               })}
             >
-              <option value="">Select an option</option>
               <option value="yes">Yes, I will attend</option>
               <option value="no">No, I cannot attend</option>
             </select>
@@ -119,16 +160,35 @@ export default function RsvpForm() {
           </div>
 
           {form.watch("attending") === "yes" && (
-            <div className="space-y-2">
-              <Label htmlFor="dietary">
-                Do you have any dietary requirements?
-              </Label>
-              <Textarea
-                id="dietary"
-                placeholder="Enter any dietary requirements"
-                {...form.register("dietary")}
-              />
-            </div>
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="guestCount">Number of Additional Guests</Label>
+                <Input
+                  id="guestCount"
+                  type="number"
+                  min="0"
+                  placeholder="0"
+                  {...form.register("guestCount")}
+                />
+                <FormDescription>
+                  Please enter the number of additional guests you'll be bringing (excluding yourself)
+                </FormDescription>
+                {form.formState.errors.guestCount && (
+                  <p className="text-sm text-red-500">{form.formState.errors.guestCount.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="dietary">
+                  Do you or your guests have any dietary requirements?
+                </Label>
+                <Textarea
+                  id="dietary"
+                  placeholder="Enter any dietary requirements"
+                  {...form.register("dietaryRestrictions")}
+                />
+              </div>
+            </>
           )}
 
           <div className="space-y-2">
@@ -146,7 +206,14 @@ export default function RsvpForm() {
           className="w-full"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Submitting..." : "Submit RSVP"}
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Submitting...
+            </>
+          ) : (
+            "Submit RSVP"
+          )}
         </Button>
       </form>
     </Form>
