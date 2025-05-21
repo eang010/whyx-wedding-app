@@ -54,40 +54,24 @@ export default function RsvpForm() {
         throw new Error("Google Script URL is not configured")
       }
 
-      // Prepare the data
-      const submitData = {
+      // Convert data to URL parameters
+      const params = new URLSearchParams({
         timestamp: new Date().toISOString(),
-        ...data,
-        guestCount: Number(data.guestCount)
-      }
+        name: data.name,
+        email: data.email,
+        attending: data.attending,
+        guestCount: String(Number(data.guestCount)),
+        dietaryRestrictions: data.dietaryRestrictions || '',
+        message: data.message || ''
+      }).toString()
 
-      const response = await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        mode: 'cors',
-        body: JSON.stringify(submitData)
+      const response = await fetch(`${GOOGLE_SCRIPT_URL}?${params}`, {
+        method: 'GET',
+        mode: 'no-cors'
       })
 
-      // For Google Apps Script, we need to check the response differently
-      const result = await response.text()
-      let jsonResult
-      try {
-        jsonResult = JSON.parse(result)
-      } catch (e) {
-        // If response is not JSON, check if it contains success message
-        if (result.includes('success')) {
-          jsonResult = { status: 'success' }
-        } else {
-          throw new Error('Invalid response format')
-        }
-      }
-      
-      if (jsonResult.status === 'error') {
-        throw new Error(jsonResult.message || 'Failed to submit RSVP')
-      }
-
+      // Since we're using no-cors, we can't read the response
+      // We'll assume success if there's no error
       toast({
         title: "RSVP Submitted",
         description: "Thank you for your response!",
