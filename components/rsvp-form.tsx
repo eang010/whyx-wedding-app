@@ -62,14 +62,11 @@ export default function RsvpForm() {
       }
 
       const response = await fetch(GOOGLE_SCRIPT_URL, {
-        redirect: 'follow',
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Origin': window.location.origin
         },
         mode: 'cors',
-        credentials: 'include',
         body: JSON.stringify(submitData)
       })
 
