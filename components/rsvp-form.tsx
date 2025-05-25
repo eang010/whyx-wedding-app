@@ -65,7 +65,9 @@ export default function RsvpForm() {
         message: data.message || ''
       }).toString()
 
-      const response = await fetch(`${GOOGLE_SCRIPT_URL}?${params}`, {
+      const fullUrl = `${GOOGLE_SCRIPT_URL}?${params}`
+
+      await fetch(fullUrl, {
         method: 'GET',
         mode: 'no-cors'
       })
@@ -78,10 +80,9 @@ export default function RsvpForm() {
       })
       form.reset()
     } catch (error) {
-      console.error('RSVP submission error:', error)
       toast({
         title: "Something went wrong",
-        description: "Your RSVP could not be submitted. Please try again.",
+        description: "Your RSVP could not be submitted. Please try again later.",
         variant: "destructive",
       })
     } finally {
