@@ -1,4 +1,7 @@
 import Image from "next/image"
+import { useRef, useCallback } from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 // Sample gallery images - replace with actual images
 const galleryImages = [
@@ -35,24 +38,63 @@ const galleryImages = [
 ]
 
 export default function ImageCarousel() {
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+
+  const scroll = useCallback((direction: 'left' | 'right') => {
+    const container = scrollContainerRef.current
+    if (!container) return
+
+    const scrollAmount = container.clientWidth * 0.8 // Scroll by 80% of container width
+    const targetScroll = container.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount)
+    
+    container.scrollTo({
+      left: targetScroll,
+      behavior: 'smooth'
+    })
+  }, [])
+
   return (
     <div className="w-full max-w-4xl mx-auto mt-8">
-      <div className="relative overflow-hidden">
-        <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-6 -mb-6">
+      <div className="relative group">
+        {/* Left Arrow - Hidden on mobile */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white/90 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          onClick={() => scroll('left')}
+        >
+          <ChevronLeft className="h-8 w-8" />
+        </Button>
+
+        {/* Right Arrow - Hidden on mobile */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white/90 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          onClick={() => scroll('right')}
+        >
+          <ChevronRight className="h-8 w-8" />
+        </Button>
+
+        <div 
+          ref={scrollContainerRef}
+          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-6 -mb-6 scroll-smooth"
+        >
           {galleryImages.map((image, index) => (
             <div
               key={index}
               className="flex-none w-[85%] sm:w-[45%] md:w-[35%] snap-center pr-4"
             >
-              <div className="relative aspect-[3/4] overflow-hidden rounded-xl group">
+              <div className="relative aspect-[3/4] overflow-hidden rounded-xl group/image">
                 <Image
                   src={image.src}
                   alt={image.alt}
                   fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="object-cover transition-transform duration-300 group-hover/image:scale-105"
+                  draggable="false"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover/image:opacity-100 transition-opacity duration-300" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover/image:translate-y-0 transition-transform duration-300">
                   <p className="text-sm font-medium text-center">
                     {image.caption}
                   </p>
