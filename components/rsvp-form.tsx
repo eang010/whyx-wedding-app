@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -10,19 +11,33 @@ import { Input } from "@/components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/hooks/use-toast"
-import { Loader2 } from "lucide-react"
+import { Loader2, CheckCircle2 } from "lucide-react"
 import { Label } from "@/components/ui/label"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  email: z.string().email({ message: "Please enter a valid email address." }),
+  name: z.string()
+    .min(2, { message: "Name must be at least 2 characters." })
+    .trim()
+    .refine((val) => val.length > 0, { message: "Name is required" }),
+  email: z.string()
+    .trim()
+    .min(1, { message: "Email is required" })
+    .email({ message: "Please enter a valid email address." }),
   attending: z.enum(["yes", "no"], {
     required_error: "Please select whether you're attending.",
   }),
   guestCount: z.string()
-    .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
-      message: "Please enter a valid number of guests.",
-    }),
+    .trim()
+    .min(1, { message: "Number of guests is required" })
+    .refine((val) => !isNaN(Number(val)), { message: "Please enter a valid number" })
+    .refine((val) => Number(val) >= 0, { message: "Guest count cannot be negative" }),
   dietaryRestrictions: z.string().optional(),
   message: z.string().optional(),
 })
@@ -30,7 +45,9 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>
 
 export default function RsvpForm() {
+  const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -42,9 +59,14 @@ export default function RsvpForm() {
       dietaryRestrictions: "",
       message: "",
     },
+    mode: "onBlur", // Validate on blur
   })
 
   async function onSubmit(data: FormValues) {
+    if (!form.formState.isValid) {
+      return;
+    }
+    
     setIsSubmitting(true)
 
     try {
@@ -72,18 +94,14 @@ export default function RsvpForm() {
         mode: 'no-cors'
       })
 
-      // Since we're using no-cors, we can't read the response
-      // We'll assume success if there's no error
-      toast({
-        title: "RSVP Submitted",
-        description: "Thank you for your response!",
-      })
       form.reset()
+      setShowSuccessDialog(true)
     } catch (error) {
       toast({
         title: "Something went wrong",
         description: "Your RSVP could not be submitted. Please try again later.",
         variant: "destructive",
+        duration: 3000, // Show for 3 seconds
       })
     } finally {
       setIsSubmitting(false)
@@ -91,115 +109,166 @@ export default function RsvpForm() {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              placeholder="Enter your name"
-              {...form.register("name", {
-                required: "Name is required",
-              })}
-            />
-            {form.formState.errors.name && (
-              <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              placeholder="Enter your email"
-              {...form.register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Invalid email address",
-                },
-              })}
-            />
-            {form.formState.errors.email && (
-              <p className="text-sm text-red-500">{form.formState.errors.email.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="attending">Will you be attending?</Label>
-            <select
-              id="attending"
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-              {...form.register("attending", {
-                required: "Please select an option",
-              })}
+    <>
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-center gap-2">
+              <CheckCircle2 className="h-6 w-6 text-green-500" />
+              RSVP Submitted Successfully
+            </DialogTitle>
+            <DialogDescription className="text-justify space-y-4 py-4">
+              <p>Thank you for your response! We look forward to celebrating with you.</p>
+              <p>Feel free to submit another response if you have any changes to your RSVP.</p>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center">
+            <Button
+              onClick={() => {
+                setShowSuccessDialog(false)
+                router.push('/')
+              }}
             >
-              <option value="yes">Yes, I will attend</option>
-              <option value="no">No, I cannot attend</option>
-            </select>
-            {form.formState.errors.attending && (
-              <p className="text-sm text-red-500">{form.formState.errors.attending.message}</p>
+              Return to Home
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">
+                Name <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="name"
+                placeholder="Enter your name"
+                {...form.register("name", {
+                  required: "Name is required",
+                })}
+                aria-required="true"
+                disabled={isSubmitting}
+              />
+              {form.formState.errors.name && (
+                <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email">
+                Email <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="email"
+                placeholder="Enter your email"
+                {...form.register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Please enter a valid email address",
+                  },
+                })}
+                aria-required="true"
+                disabled={isSubmitting}
+              />
+              {form.formState.errors.email && (
+                <p className="text-sm text-red-500">{form.formState.errors.email.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="attending">
+                Will you be attending? <span className="text-red-500">*</span>
+              </Label>
+              <select
+                id="attending"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                {...form.register("attending", {
+                  required: "Please indicate whether you will be attending",
+                })}
+                aria-required="true"
+                disabled={isSubmitting}
+              >
+                <option value="yes">Yes, I will attend</option>
+                <option value="no">No, I cannot attend</option>
+              </select>
+              {form.formState.errors.attending && (
+                <p className="text-sm text-red-500">{form.formState.errors.attending.message}</p>
+              )}
+            </div>
+
+            {form.watch("attending") === "yes" && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="guestCount">
+                    Number of Additional Guests <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="guestCount"
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    {...form.register("guestCount", {
+                      required: "Please specify the number of additional guests",
+                      min: {
+                        value: 0,
+                        message: "Guest count cannot be negative"
+                      }
+                    })}
+                    aria-required="true"
+                    disabled={isSubmitting}
+                  />
+                  <FormDescription>
+                    Please enter the number of additional guests you'll be bringing (excluding yourself)
+                  </FormDescription>
+                  {form.formState.errors.guestCount && (
+                    <p className="text-sm text-red-500">{form.formState.errors.guestCount.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="dietary">
+                    Do you or your guests have any dietary requirements?
+                  </Label>
+                  <Textarea
+                    id="dietary"
+                    placeholder="Enter any dietary requirements (optional)"
+                    {...form.register("dietaryRestrictions")}
+                    disabled={isSubmitting}
+                  />
+                </div>
+              </>
             )}
+
+            <div className="space-y-2">
+              <Label htmlFor="message">Message for the couple</Label>
+              <Textarea
+                id="message"
+                placeholder="Enter your message (optional)"
+                {...form.register("message")}
+                disabled={isSubmitting}
+              />
+            </div>
           </div>
 
-          {form.watch("attending") === "yes" && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="guestCount">Number of Additional Guests</Label>
-                <Input
-                  id="guestCount"
-                  type="number"
-                  min="0"
-                  placeholder="0"
-                  {...form.register("guestCount")}
-                />
-                <FormDescription>
-                  Please enter the number of additional guests you'll be bringing (excluding yourself)
-                </FormDescription>
-                {form.formState.errors.guestCount && (
-                  <p className="text-sm text-red-500">{form.formState.errors.guestCount.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="dietary">
-                  Do you or your guests have any dietary requirements?
-                </Label>
-                <Textarea
-                  id="dietary"
-                  placeholder="Enter any dietary requirements"
-                  {...form.register("dietaryRestrictions")}
-                />
-              </div>
-            </>
-          )}
-
-          <div className="space-y-2">
-            <Label htmlFor="message">Message for the couple (optional)</Label>
-            <Textarea
-              id="message"
-              placeholder="Enter your message"
-              {...form.register("message")}
-            />
-          </div>
-        </div>
-
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Submitting...
-            </>
-          ) : (
-            "Submit RSVP"
-          )}
-        </Button>
-      </form>
-    </Form>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Submitting...
+              </>
+            ) : (
+              "Submit RSVP"
+            )}
+          </Button>
+        </form>
+      </Form>
+    </>
   )
 }
