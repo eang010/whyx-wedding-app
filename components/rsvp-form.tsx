@@ -59,14 +59,10 @@ export default function RsvpForm() {
       dietaryRestrictions: "",
       message: "",
     },
-    mode: "onBlur", // Validate on blur
+    mode: "onChange",
   })
 
   async function onSubmit(data: FormValues) {
-    if (!form.formState.isValid) {
-      return;
-    }
-    
     setIsSubmitting(true)
 
     try {
@@ -101,7 +97,7 @@ export default function RsvpForm() {
         title: "Something went wrong",
         description: "Your RSVP could not be submitted. Please try again later.",
         variant: "destructive",
-        duration: 3000, // Show for 3 seconds
+        duration: 3000,
       })
     } finally {
       setIsSubmitting(false)
