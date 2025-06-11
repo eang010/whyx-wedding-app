@@ -53,7 +53,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
 
   return (
     <AudioContext.Provider value={{ isPlaying, toggleAudio }}>
-      <audio ref={audioRef} loop src="/audio/Somewhere only we know.mp3" />
+      <audio ref={audioRef} loop src="/audio/Forever and Ever and Always.mp3" />
       {children}
     </AudioContext.Provider>
   )
