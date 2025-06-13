@@ -30,6 +30,9 @@ const formSchema = z.object({
     .trim()
     .min(1, { message: "Email is required" })
     .email({ message: "Please enter a valid email address." }),
+    side: z.enum(["bride", "groom"], {
+      required_error: "Please indicate whose side you are from.",
+    }),
   attending: z.enum(["yes", "no"], {
     required_error: "Please select whether you're attending.",
   }),
@@ -40,9 +43,6 @@ const formSchema = z.object({
     .refine((val) => Number(val) >= 0, { message: "Guest count cannot be negative" }),
   dietaryRestrictions: z.string().optional(),
   message: z.string().optional(),
-  side: z.enum(["bride", "groom"], {
-    required_error: "Please indicate whose side you are from.",
-  }),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -57,11 +57,11 @@ export default function RsvpForm() {
     defaultValues: {
       name: "",
       email: "",
+      side: undefined,
       attending: "yes",
       guestCount: "0",
       dietaryRestrictions: "",
       message: "",
-      side: undefined,
     },
     mode: "onChange",
   })
@@ -81,11 +81,11 @@ export default function RsvpForm() {
         timestamp: new Date().toISOString(),
         name: data.name,
         email: data.email,
+        side: data.side,
         attending: data.attending,
         guestCount: String(Number(data.guestCount)),
         dietaryRestrictions: data.dietaryRestrictions || '',
         message: data.message || '',
-        side: data.side,
       }).toString()
 
       const fullUrl = `${GOOGLE_SCRIPT_URL}?${params}`
