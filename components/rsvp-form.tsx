@@ -40,6 +40,9 @@ const formSchema = z.object({
     .refine((val) => Number(val) >= 0, { message: "Guest count cannot be negative" }),
   dietaryRestrictions: z.string().optional(),
   message: z.string().optional(),
+  side: z.enum(["bride", "groom"], {
+    required_error: "Please indicate whose side you are from.",
+  }),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -58,6 +61,7 @@ export default function RsvpForm() {
       guestCount: "0",
       dietaryRestrictions: "",
       message: "",
+      side: undefined,
     },
     mode: "onChange",
   })
@@ -80,7 +84,8 @@ export default function RsvpForm() {
         attending: data.attending,
         guestCount: String(Number(data.guestCount)),
         dietaryRestrictions: data.dietaryRestrictions || '',
-        message: data.message || ''
+        message: data.message || '',
+        side: data.side,
       }).toString()
 
       const fullUrl = `${GOOGLE_SCRIPT_URL}?${params}`
@@ -171,6 +176,35 @@ export default function RsvpForm() {
               />
               {form.formState.errors.email && (
                 <p className="text-sm text-red-500">{form.formState.errors.email.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="side">
+                Whose side are you from? <span className="text-red-500">*</span>
+              </Label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    value="bride"
+                    {...form.register("side", { required: "Please indicate whose side you are from." })}
+                    disabled={isSubmitting}
+                  />
+                  <span>👰 Bride</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    value="groom"
+                    {...form.register("side", { required: "Please indicate whose side you are from." })}
+                    disabled={isSubmitting}
+                  />
+                  <span>🤵 Groom</span>
+                </label>
+              </div>
+              {form.formState.errors.side && (
+                <p className="text-sm text-red-500">{form.formState.errors.side.message}</p>
               )}
             </div>
 
