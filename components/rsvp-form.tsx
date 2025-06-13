@@ -121,7 +121,7 @@ export default function RsvpForm() {
               <Loader2 className="h-8 w-8 animate-spin text-babyblue-dark" />
               <h2 className="text-xl font-semibold">Submitting RSVP</h2>
               <p className="text-center text-gray-600">
-                Please do not close this window or navigate away while we process your RSVP.
+                Wait, don't go yet! We're still processing your RSVP.
               </p>
             </div>
           </div>
