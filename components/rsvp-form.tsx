@@ -76,6 +76,9 @@ export default function RsvpForm() {
         throw new Error("Google Script URL is not configured")
       }
 
+      // Add artificial delay to make loading state more visible
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
       // Convert data to URL parameters
       const params = new URLSearchParams({
         timestamp: new Date().toISOString(),
@@ -111,6 +114,20 @@ export default function RsvpForm() {
 
   return (
     <>
+      {isSubmitting && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+            <div className="flex flex-col items-center justify-center gap-4">
+              <Loader2 className="h-8 w-8 animate-spin text-babyblue-dark" />
+              <h2 className="text-xl font-semibold">Submitting RSVP</h2>
+              <p className="text-center text-gray-600">
+                Please do not close this window or navigate away while we process your RSVP.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
