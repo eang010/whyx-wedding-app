@@ -30,7 +30,7 @@ const formSchema = z.object({
     .trim()
     .min(1, { message: "Email is required" })
     .email({ message: "Please enter a valid email address." }),
-    side: z.enum(["bride", "groom"], {
+    side: z.enum(["groom", "bride"], {
       required_error: "Please indicate whose side you are from.",
     }),
   attending: z.enum(["yes", "no"], {
@@ -204,20 +204,20 @@ export default function RsvpForm() {
                 <label className="flex items-center gap-2">
                   <input
                     type="radio"
-                    value="bride"
-                    {...form.register("side", { required: "Please indicate whose side you are from." })}
-                    disabled={isSubmitting}
-                  />
-                  <span>👰 Bride</span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
                     value="groom"
                     {...form.register("side", { required: "Please indicate whose side you are from." })}
                     disabled={isSubmitting}
                   />
                   <span>🤵 Groom</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    value="bride"
+                    {...form.register("side", { required: "Please indicate whose side you are from." })}
+                    disabled={isSubmitting}
+                  />
+                  <span>👰 Bride</span>
                 </label>
               </div>
               {form.formState.errors.side && (
