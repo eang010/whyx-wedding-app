@@ -39,7 +39,7 @@ export default function Home() {
         <div
           className="absolute inset-0 bg-cover bg-center z-0"
           style={{
-            backgroundImage: "url('/images/4.jpg')",
+            backgroundImage: "url('/images/5.jpg')",
             backgroundBlendMode: "overlay",
             backgroundPosition: "center 52%"
           }}

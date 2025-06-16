@@ -12,28 +12,48 @@ const galleryImages = [
   },
   {
     src: "/images/2.jpg",
-    alt: "Adventure in the Rockiespenguin",
-    caption: "Like penguins, let's be forever",
+    alt: "有山有海，有你有我",
+    caption: "有山有海，有你和我",
   },
   {
     src: "/images/3.jpg",
-    alt: "Adventure with you",
-    caption: "You are the only one I want to adventure with",
-  },
-  {
-    src: "/images/4.jpg",
-    alt: "Engagement photo",
-    caption: "The day we got engaged",
-  },
-  {
-    src: "/images/5.jpg",
     alt: "Hokkaido Japan",
     caption: "Roses are red, violets are blue, I'm in love with you",
   },
   {
+    src: "/images/4.jpg",
+    alt: "My home",
+    caption: "My home is where you are",
+  },
+  {
+    src: "/images/5.jpg",
+    alt: "Engagement photo",
+    caption: "The day we got engaged",
+  },
+  {
     src: "/images/6.jpg",
+    alt: "Adventure with you",
+    caption: "The adventure awaits",
+  },
+  {
+    src: "/images/7.jpg",
+    alt: "Beach day",
+    caption: "Sandy beaches, blue skies, and you",
+  },
+  {
+    src: "/images/8.jpg",
+    alt: "Swing along",
+    caption: "Swinging with you into the future",
+  },
+  {
+    src: "/images/9.jpg",
     alt: "Future with you",
-    caption: "Future with you and me",
+    caption: "Ah, the future is bright",
+  },
+  {
+    src: "/images/10.jpg",
+    alt: "You and I",
+    caption: "You and I, together forever",
   },
 ]
 
