@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useState, useEffect } from "react"
 import Link from "next/link"
 import CountdownTimer from "@/components/countdown-timer"
 import WeddingDetails from "@/components/wedding-details"
@@ -18,6 +18,9 @@ export default function Home() {
   const detailsRef = useRef<HTMLDivElement>(null)
   const galleryRef = useRef<HTMLDivElement>(null)
 
+  // State for scroll detection
+  const [showUpArrow, setShowUpArrow] = useState(false)
+
   // Function to scroll to details section
   const scrollToDetails = () => {
     detailsRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -32,6 +35,20 @@ export default function Home() {
   const scrollToGallery = () => {
     galleryRef.current?.scrollIntoView({ behavior: "smooth" })
   }
+
+  // Scroll detection effect
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + window.innerHeight
+      const documentHeight = document.documentElement.scrollHeight
+      const threshold = 100 // Show arrow when within 100px of bottom
+      
+      setShowUpArrow(scrollPosition >= documentHeight - threshold)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
     <main className="flex flex-col items-center">
@@ -83,17 +100,6 @@ export default function Home() {
 
       {/* Details Section - Initially Hidden Below Viewport */}
       <div ref={detailsRef} className="w-full relative">
-        {/* Up Arrow Button */}
-        <div className="sticky top-6 z-20 flex justify-center">
-          <button
-            onClick={scrollToCountdown}
-            className="bg-babyblue-dark/80 backdrop-blur-sm p-3 rounded-full hover:bg-babyblue-dark transition-colors shadow-md"
-            aria-label="Scroll to countdown"
-          >
-            <ChevronUp className="h-6 w-6 text-white" />
-          </button>
-        </div>
-
         {/* Wedding Details Section */}
         <section className="w-full py-16 px-4 bg-white">
           <div className="max-w-4xl mx-auto">
@@ -120,6 +126,20 @@ export default function Home() {
           </div>
         </section>
       </div>
+
+      {/* Up Arrow Button - Fixed position, bottom left, only shows at bottom */}
+      {showUpArrow && (
+        <div className="fixed bottom-6 left-6 z-50">
+          <button
+            onClick={scrollToCountdown}
+            className="bg-white shadow-md border border-gray-200 px-4 py-2 rounded-full hover:bg-gray-50 transition-colors flex items-center gap-2"
+            aria-label="Scroll to countdown"
+          >
+            <ChevronUp className="h-4 w-4 text-babyblue-dark" />
+            <span className="text-sm text-gray-700">Back to top</span>
+          </button>
+        </div>
+      )}
     </main>
   )
 }
