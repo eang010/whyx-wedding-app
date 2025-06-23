@@ -7,6 +7,12 @@ import { Button } from "@/components/ui/button"
 
 const faqData = [
   {
+    question: "When is the RSVP deadline?",
+    answer:
+      "The RSVP deadline is 1st September 2025. Please RSVP by then to ensure we have enough food and drinks for everyone.",
+    keywords: ["RSVP", "deadline"],
+  },
+  {
     question: "Is it okay to take pictures with our phones and cameras during the wedding?",
     answer:
       "Yes! We would love for you to take photos and share them with us! Please feel free to capture moments throughout the ceremony and reception. We just ask that you be mindful of the professional photographers and avoid blocking their shots during key moments.",
@@ -15,68 +21,32 @@ const faqData = [
   {
     question: "What should I wear to the wedding?",
     answer:
-      "We recommend semi-formal to formal attire. For men, a suit or dress shirt with slacks is perfect. For women, a cocktail dress or elegant outfit would be lovely. Please avoid wearing white or ivory, as we'd like to reserve those colors for the bride.",
+      "We recommend semi-formal to formal attire. For men, a suit or dress shirt with slacks is perfect. For women, a dress or elegant outfit would be lovely.",
     keywords: ["dress code", "attire", "clothing", "outfit", "formal", "suit", "dress", "white", "colors"],
   },
   {
     question: "Will there be parking available at the venue?",
     answer:
-      "Yes, St. Mary's Chapel has a parking lot with ample space for guests. Additional street parking is also available nearby. We recommend arriving 15-20 minutes early to find parking and get seated comfortably.",
+      "Yes, Singapore Marriott Tang Plaza Hotel has a parking lot with ample space for guests. We recommend arriving 15-20 minutes early to find parking and get seated comfortably. Alternatively, Orchard MRT station is just a short walk away.",
     keywords: ["parking", "cars", "driving", "venue", "arrival", "transportation"],
   },
   {
     question: "What time should I arrive?",
     answer:
-      "Please plan to arrive by 3:45 PM for the 4:00 PM ceremony. This will give you time to find parking, sign the guest book, and find your seat. If you're attending the solemnization at 2:30 PM, please arrive by 2:15 PM.",
+      "Please plan to arrive by 11:30 AM for the 12:00 PM ceremony. This will give you time to find parking, sign the guest book, and find your seat. If you're attending the solemnization at 11:30 AM, please arrive by 11:15 AM.",
     keywords: ["time", "arrival", "schedule", "when", "ceremony", "solemnization", "punctual"],
-  },
-  {
-    question: "Will the ceremony be indoors or outdoors?",
-    answer:
-      "The ceremony will be held indoors at St. Mary's Chapel. The venue is climate-controlled, so you'll be comfortable regardless of the weather outside.",
-    keywords: ["indoor", "outdoor", "weather", "venue", "location", "climate", "temperature"],
-  },
-  {
-    question: "Is there a gift registry?",
-    answer:
-      "Your presence is the greatest gift! If you'd like to give something, we have a small registry at [Store Name] or monetary gifts are also appreciated. However, please don't feel obligated - celebrating with us is all we need.",
-    keywords: ["gifts", "registry", "presents", "money", "donations", "wedding gifts"],
-  },
-  {
-    question: "Will there be food and drinks at the reception?",
-    answer:
-      "Yes! We'll have a full dinner service starting at 7:00 PM, along with cocktails and hors d'oeuvres during the cocktail hour. We've made arrangements for various dietary restrictions - please let us know about any specific needs in your RSVP.",
-    keywords: ["food", "drinks", "dinner", "cocktails", "reception", "meal", "catering", "alcohol", "bar"],
   },
   {
     question: "Can I bring my children?",
     answer:
-      "We love children! Families with children are welcome at both the ceremony and reception. We'll have some kid-friendly meal options available. Please include children in your guest count when you RSVP.",
+      "We love children! Families with children are welcome at the ceremony. We'll have some kid-friendly meal options available. Please include children in your guest count when you RSVP.",
     keywords: ["children", "kids", "family", "babies", "minors", "child-friendly"],
-  },
-  {
-    question: "What if I have dietary restrictions or food allergies?",
-    answer:
-      "Please let us know about any dietary restrictions or allergies in your RSVP form. Our catering team can accommodate most dietary needs including vegetarian, vegan, gluten-free, and common allergies.",
-    keywords: ["dietary", "allergies", "vegetarian", "vegan", "gluten-free", "food restrictions", "special diet"],
   },
   {
     question: "Is there a hashtag for social media?",
     answer:
-      "Yes! Please use #SarahAndMichaelWedding when posting photos on social media. We'd love to see all your pictures and memories from our special day!",
+      "Yes! Please use #WHYX when posting photos on social media. We'd love to see all your pictures and memories from our special day!",
     keywords: ["hashtag", "social media", "instagram", "facebook", "twitter", "sharing", "photos"],
-  },
-  {
-    question: "What happens if it rains?",
-    answer:
-      "Since our ceremony is indoors at St. Mary's Chapel, weather won't affect the main events. However, if you're planning to take outdoor photos, we recommend bringing an umbrella just in case!",
-    keywords: ["rain", "weather", "backup plan", "indoor", "umbrella", "storm"],
-  },
-  {
-    question: "How long will the reception last?",
-    answer:
-      "The reception will run from approximately 5:30 PM to 11:00 PM. This includes cocktail hour, dinner service, speeches, and dancing. You're welcome to stay for the entire celebration!",
-    keywords: ["reception", "duration", "time", "schedule", "dancing", "party", "end time"],
   },
 ]
 
@@ -125,7 +95,7 @@ export default function WeddingFAQ() {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <h2 className="text-3xl md:text-4xl font-serif text-center mb-8">Frequently Asked Questions</h2>
+      <h2 className="text-3xl md:text-4xl font-serif text-center mb-8">Questions?</h2>
 
       {/* Search Bar */}
       <div className="relative mb-8">
@@ -199,22 +169,7 @@ export default function WeddingFAQ() {
       {/* Contact Section with Telegram Link */}
       <div className="mt-8 text-center">
         <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-gray-600 text-sm">
-          <span>Have another question?</span>
-          <div className="flex items-center gap-4">
-            <span className="hidden sm:inline">Feel free to</span>
-            <Button
-              asChild
-              variant="outline"
-              size="sm"
-              className="border-babyblue-dark text-babyblue-dark hover:bg-babyblue-dark hover:text-white"
-            >
-              <a href="https://t.me/sarahandmichaelwedding" target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="h-4 w-4 mr-2" />
-                Message us on Telegram
-              </a>
-            </Button>
-            <span>or ask any member of the wedding party.</span>
-          </div>
+          <span>Have another question? Do reach out to us! 📞</span>
         </div>
       </div>
     </div>
