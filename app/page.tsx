@@ -112,10 +112,6 @@ export default function Home() {
         <section ref={galleryRef} className="w-full py-16 px-4 bg-blue-50">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-serif mb-8">Our Story</h2>
-            <p className="text-lg text-gray-700 mb-8">
-              We met four years ago at a coffee shop and had a coffee & bagel. What started as a chance encounter turned into the love
-              of a lifetime. We're excited to celebrate our special day with our closest friends and family.
-            </p>
             <ImageCarousel />
           </div>
         </section>
