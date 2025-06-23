@@ -90,6 +90,7 @@ export default function WeddingFAQ() {
 
   const clearSearch = () => {
     setSearchTerm("")
+    setOpenItems([])
   }
 
   // Filter FAQ items based on search term
