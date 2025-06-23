@@ -8,35 +8,32 @@ import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
 import { toast } from "@/hooks/use-toast"
 import { Loader2, CheckCircle2 } from "lucide-react"
-import { Label } from "@/components/ui/label"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 const formSchema = z.object({
-  name: z.string()
+  name: z
+    .string()
     .min(2, { message: "Name must be at least 2 characters." })
     .trim()
     .refine((val) => val.length > 0, { message: "Name is required" }),
-  email: z.string()
+  email: z
+    .string()
     .trim()
     .min(1, { message: "Email is required" })
     .email({ message: "Please enter a valid email address." }),
-    side: z.enum(["groom", "bride"], {
-      required_error: "Please indicate whose side you are from.",
-    }),
+  side: z.enum(["groom", "bride"], {
+    required_error: "Please indicate whose side you are from.",
+  }),
   attending: z.enum(["yes", "no"], {
     required_error: "Please select whether you're attending.",
   }),
-  guestCount: z.string()
+  attendingSolemnization: z.boolean().optional(),
+  guestCount: z
+    .string()
     .trim()
     .min(1, { message: "Number of guests is required" })
     .refine((val) => !isNaN(Number(val)), { message: "Please enter a valid number" })
@@ -59,6 +56,7 @@ export default function RsvpForm() {
       email: "",
       side: undefined,
       attending: "yes",
+      attendingSolemnization: false,
       guestCount: "0",
       dietaryRestrictions: "",
       message: "",
@@ -76,31 +74,32 @@ export default function RsvpForm() {
         throw new Error("Google Script URL is not configured")
       }
 
-      // Add artificial delay to make loading state more visible
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      // Convert data to URL parameters
       const params = new URLSearchParams({
         timestamp: new Date().toISOString(),
         name: data.name,
         email: data.email,
         side: data.side,
         attending: data.attending,
+        attendingSolemnization: data.attendingSolemnization ? "Yes" : "No", 
         guestCount: String(Number(data.guestCount)),
-        dietaryRestrictions: data.dietaryRestrictions || '',
-        message: data.message || '',
+        totalGuests: String(Number(data.guestCount) + (data.attending === "yes" ? 1 : 0)),
+        dietaryRestrictions: data.dietaryRestrictions || "",
+        message: data.message || "",
       }).toString()
 
       const fullUrl = `${GOOGLE_SCRIPT_URL}?${params}`
 
       await fetch(fullUrl, {
-        method: 'GET',
-        mode: 'no-cors'
+        method: "GET",
+        mode: "no-cors",
       })
 
       form.reset()
       setShowSuccessDialog(true)
     } catch (error) {
+      console.error("RSVP Submission Error:", error)
       toast({
         title: "Something went wrong",
         description: "Your RSVP could not be submitted. Please try again later.",
@@ -120,9 +119,7 @@ export default function RsvpForm() {
             <div className="flex flex-col items-center justify-center gap-4">
               <Loader2 className="h-8 w-8 animate-spin text-babyblue-dark" />
               <h2 className="text-xl font-semibold">Submitting RSVP</h2>
-              <p className="text-center text-gray-600">
-                Wait, don't go yet! We're still processing your RSVP.
-              </p>
+              <p className="text-center text-gray-600">Wait, don't go yet! We're still processing your RSVP.</p>
             </div>
           </div>
         </div>
@@ -144,7 +141,7 @@ export default function RsvpForm() {
             <Button
               onClick={() => {
                 setShowSuccessDialog(false)
-                router.push('/')
+                router.push("/")
               }}
             >
               Return to Home
@@ -156,154 +153,202 @@ export default function RsvpForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">
-                Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="name"
-                placeholder="Enter your name"
-                {...form.register("name", {
-                  required: "Name is required",
-                })}
-                aria-required="true"
-                disabled={isSubmitting}
-              />
-              {form.formState.errors.name && (
-                <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>
+            {/* Name Field */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Name <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your name" {...field} disabled={isSubmitting} aria-required="true" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="email">
-                Email <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="email"
-                placeholder="Enter your email"
-                {...form.register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: "Please enter a valid email address",
-                  },
-                })}
-                aria-required="true"
-                disabled={isSubmitting}
-              />
-              {form.formState.errors.email && (
-                <p className="text-sm text-red-500">{form.formState.errors.email.message}</p>
+            {/* Email Field */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Email <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      {...field}
+                      disabled={isSubmitting}
+                      aria-required="true"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="side">
-                Whose side are you from? <span className="text-red-500">*</span>
-              </Label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    value="groom"
-                    {...form.register("side", { required: "Please indicate whose side you are from." })}
-                    disabled={isSubmitting}
-                  />
-                  <span>🤵 Groom</span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    value="bride"
-                    {...form.register("side", { required: "Please indicate whose side you are from." })}
-                    disabled={isSubmitting}
-                  />
-                  <span>👰 Bride</span>
-                </label>
-              </div>
-              {form.formState.errors.side && (
-                <p className="text-sm text-red-500">{form.formState.errors.side.message}</p>
+            {/* Side Field */}
+            <FormField
+              control={form.control}
+              name="side"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Whose side are you from? <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    {/* Using shadcn/ui RadioGroup for consistency if preferred, or keep native radios */}
+                    <div className="flex gap-4">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          value="groom"
+                          checked={field.value === "groom"}
+                          onChange={() => field.onChange("groom")}
+                          disabled={isSubmitting}
+                          className="form-radio"
+                        />
+                        <span>🤵 Groom</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          value="bride"
+                          checked={field.value === "bride"}
+                          onChange={() => field.onChange("bride")}
+                          disabled={isSubmitting}
+                          className="form-radio"
+                        />
+                        <span>👰 Bride</span>
+                      </label>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="attending">
-                Will you be attending? <span className="text-red-500">*</span>
-              </Label>
-              <select
-                id="attending"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                {...form.register("attending", {
-                  required: "Please indicate whether you will be attending",
-                })}
-                aria-required="true"
-                disabled={isSubmitting}
-              >
-                <option value="yes">Yes, I will attend</option>
-                <option value="no">No, I cannot attend</option>
-              </select>
-              {form.formState.errors.attending && (
-                <p className="text-sm text-red-500">{form.formState.errors.attending.message}</p>
+            {/* Attending Field */}
+            <FormField
+              control={form.control}
+              name="attending"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Will you be attending? <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <select
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                      {...field}
+                      disabled={isSubmitting}
+                      aria-required="true"
+                    >
+                      <option value="yes">Yes, I will attend</option>
+                      <option value="no">No, I cannot attend</option>
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
+            />
 
             {form.watch("attending") === "yes" && (
               <>
-                <div className="space-y-2">
-                  <Label htmlFor="guestCount">
-                    Number of Additional Guests <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="guestCount"
-                    type="number"
-                    min="0"
-                    placeholder="0"
-                    {...form.register("guestCount", {
-                      required: "Please specify the number of additional guests",
-                      min: {
-                        value: 0,
-                        message: "Guest count cannot be negative"
-                      }
-                    })}
-                    aria-required="true"
-                    disabled={isSubmitting}
-                  />
-                  <FormDescription>
-                    Please enter the number of additional guests you'll be bringing (excluding yourself)
-                  </FormDescription>
-                  {form.formState.errors.guestCount && (
-                    <p className="text-sm text-red-500">{form.formState.errors.guestCount.message}</p>
+                {/* Guest Count Field */}
+                <FormField
+                  control={form.control}
+                  name="guestCount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Number of Additional Guests <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          placeholder="0"
+                          {...field}
+                          disabled={isSubmitting}
+                          aria-required="true"
+                        />
+                      </FormControl>
+                      <FormDescription>Guest count excludes yourself.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                </div>
+                />
 
-                <div className="space-y-2">
-                  <Label htmlFor="dietary">
-                    Do you or your guests have any dietary requirements?
-                  </Label>
-                  <Textarea
-                    id="dietary"
-                    placeholder="Enter any dietary requirements (optional)"
-                    {...form.register("dietaryRestrictions")}
-                    disabled={isSubmitting}
-                  />
-                </div>
+                {/* Dietary Restrictions Field */}
+                <FormField
+                  control={form.control}
+                  name="dietaryRestrictions"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Dietary Restrictions (Optional)</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Vegetarian, Halal, Allergies etc." {...field} disabled={isSubmitting} />
+                      </FormControl>
+                      <FormDescription>Please let us know of any dietary restrictions or allergies.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="attendingSolemnization"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow bg-gray-50">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          disabled={isSubmitting}
+                          id="attendingSolemnization"
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel htmlFor="attendingSolemnization" className="cursor-pointer">
+                          Would you like to attend the Solemnization ceremony?
+                        </FormLabel>
+                        <FormDescription>
+                          This is an optional, intimate ceremony for the signing of marriage documents (e.g., 11:00 AM -
+                          11:30 AM). Limited seating.
+                        </FormDescription>
+                      </div>
+                    </FormItem>
+                  )}
+                />
               </>
             )}
 
-            <div className="space-y-2">
-              <Label htmlFor="message">Message for the couple</Label>
-              <Textarea
-                id="message"
-                placeholder="Enter your message (optional)"
-                {...form.register("message")}
-                disabled={isSubmitting}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Message (Optional)</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Leave a message for the couple" {...field} disabled={isSubmitting} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           <Button
             type="submit"
-            className="w-full"
-            disabled={isSubmitting}
+            className="w-full bg-babyblue-dark hover:bg-babyblue"
+            disabled={isSubmitting || !form.formState.isValid}
           >
             {isSubmitting ? (
               <>
