@@ -25,7 +25,7 @@ export default function WeddingDetails() {
           <Clock className="h-5 w-5 text-babyblue-dark mt-1" />
           <div>
             <h4 className="font-medium">Time</h4>
-            <p className="text-gray-600">12:00 PM - 3:00 PM</p>
+            <p className="text-gray-600">12:30 PM - 3:30 PM</p>
           </div>
         </div>
 
@@ -58,7 +58,7 @@ export default function WeddingDetails() {
         </div>
         <div className="text-gray-600 space-y-2">
           <p>
-            <strong>Solemnization:</strong> 11:30 AM - 12:00 PM at Singapore Marriott Tang Plaza Hotel (Private Room)
+            <strong>Solemnization:</strong> 11:30 AM - 12:00 PM
           </p>
           <p className="text-xs">
             An intimate ceremony for the signing of marriage documents. Limited seating available for those who wish to

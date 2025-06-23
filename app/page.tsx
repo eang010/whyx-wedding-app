@@ -111,7 +111,11 @@ export default function Home() {
         {/* Our Story Section with Carousel */}
         <section ref={galleryRef} className="w-full py-16 px-4 bg-blue-50">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-serif mb-8">Our Story</h2>
+            <h2 className="text-3xl md:text-4xl font-serif mb-8">Our Journey to 'I Do'</h2>
+            <p className="text-lg text-gray-700 mb-8">
+              What began as a chance encounter blossomed into a love beyond anything we could have imagined. 
+              As we turn the page to this exciting new chapter, we can't wait to celebrate our special day with our friends and family. 
+            </p>
             <ImageCarousel />
           </div>
         </section>

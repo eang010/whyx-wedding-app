@@ -33,7 +33,7 @@ const faqData = [
   {
     question: "What time should I arrive?",
     answer:
-      "Please plan to arrive by 11:30 AM for the 12:00 PM ceremony. This will give you time to find parking, sign the guest book, and find your seat. If you're attending the solemnization at 11:30 AM, please arrive by 11:15 AM.",
+      "Please plan to arrive by 12:00 PM for the 1:00 PM ceremony. This will give you time to find parking, sign the guest book, and find your seat. If you're attending the solemnization at 11:30 AM, please arrive by 11:15 AM.",
     keywords: ["time", "arrival", "schedule", "when", "ceremony", "solemnization", "punctual"],
   },
   {
