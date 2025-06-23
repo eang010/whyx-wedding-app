@@ -5,6 +5,7 @@ import Link from "next/link"
 import CountdownTimer from "@/components/countdown-timer"
 import WeddingDetails from "@/components/wedding-details"
 import ImageCarousel from "@/components/image-carousel"
+import WeddingFAQ from "@/components/wedding-faq"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronUp } from "lucide-react"
 
@@ -110,6 +111,12 @@ export default function Home() {
               of a lifetime. We're excited to celebrate our special day with our closest friends and family.
             </p>
             <ImageCarousel />
+          </div>
+        </section>
+        {/* FAQ Section */}
+        <section className="w-full py-16 px-4 bg-white">
+          <div className="max-w-4xl mx-auto">
+            <WeddingFAQ />
           </div>
         </section>
       </div>
