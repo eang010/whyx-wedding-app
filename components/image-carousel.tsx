@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { useRef, useCallback } from "react"
+import { useRef, useCallback, useState, useEffect } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -64,6 +64,10 @@ const galleryImages = [
 
 export default function ImageCarousel() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const [isAutoScrolling, setIsAutoScrolling] = useState(true)
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isHovered, setIsHovered] = useState(false)
+  const [isTouchHeld, setIsTouchHeld] = useState(false)
 
   const scroll = useCallback((direction: 'left' | 'right') => {
     const container = scrollContainerRef.current
@@ -78,9 +82,69 @@ export default function ImageCarousel() {
     })
   }, [])
 
+  const scrollToIndex = useCallback((index: number) => {
+    const container = scrollContainerRef.current
+    if (!container) return
+
+    const itemWidth = container.clientWidth * 0.85 // 85% width on mobile
+    const scrollAmount = itemWidth * index
+    
+    container.scrollTo({
+      left: scrollAmount,
+      behavior: 'smooth'
+    })
+    setCurrentIndex(index)
+  }, [])
+
+  // Auto-scroll functionality
+  useEffect(() => {
+    if (!isAutoScrolling || isHovered || isTouchHeld) return
+
+    const interval = setInterval(() => {
+      const container = scrollContainerRef.current
+      if (!container) return
+
+      const nextIndex = (currentIndex + 1) % galleryImages.length
+      scrollToIndex(nextIndex)
+    }, 3000) // Auto-scroll every 3 seconds
+
+    return () => clearInterval(interval)
+  }, [isAutoScrolling, isHovered, isTouchHeld, currentIndex, scrollToIndex, galleryImages.length])
+
+  // Update current index based on scroll position
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container) return
+
+    const handleScroll = () => {
+      const itemWidth = container.clientWidth * 0.85
+      const newIndex = Math.round(container.scrollLeft / itemWidth)
+      setCurrentIndex(Math.min(newIndex, galleryImages.length - 1))
+    }
+
+    container.addEventListener('scroll', handleScroll)
+    return () => container.removeEventListener('scroll', handleScroll)
+  }, [galleryImages.length])
+
+  // Touch handlers for mobile
+  const handleTouchStart = () => {
+    setIsTouchHeld(true)
+  }
+
+  const handleTouchEnd = () => {
+    setIsTouchHeld(false)
+  }
+
   return (
     <div className="w-full max-w-4xl mx-auto mt-8">
-      <div className="relative group">
+      <div 
+        className="relative group"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+
         {/* Left Arrow - Hidden on mobile */}
         <Button
           variant="ghost"
@@ -110,13 +174,14 @@ export default function ImageCarousel() {
               key={index}
               className="flex-none w-[85%] sm:w-[45%] md:w-[35%] snap-center pr-4"
             >
-              <div className="relative aspect-[3/4] overflow-hidden rounded-xl group/image">
+              <div className="relative aspect-[3/4] overflow-hidden rounded-xl group/image cursor-pointer">
                 <Image
                   src={image.src}
                   alt={image.alt}
                   fill
                   className="object-cover transition-transform duration-300 group-hover/image:scale-105"
                   draggable="false"
+                  priority={index < 3} // Prioritize loading first 3 images
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover/image:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover/image:translate-y-0 transition-transform duration-300">
@@ -128,7 +193,36 @@ export default function ImageCarousel() {
             </div>
           ))}
         </div>
+
+        {/* Progress indicators */}
+        <div className="flex justify-center mt-4 space-x-2">
+          {galleryImages.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => scrollToIndex(index)}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                index === currentIndex 
+                  ? 'bg-babyblue-dark scale-125' 
+                  : 'bg-gray-300 hover:bg-gray-400'
+              }`}
+              title={`Go to image ${index + 1}`}
+            />
+          ))}
+        </div>
+
+        {/* Image counter */}
+        <div className="absolute bottom-2 left-2 z-10 bg-black/50 text-white px-2 py-1 rounded text-xs">
+          {currentIndex + 1} / {galleryImages.length}
+        </div>
       </div>
+
+      {/* Auto-scroll status indicator */}
+      {isAutoScrolling && (
+        <div className="text-center mt-2 text-sm text-gray-500">
+          Auto-scrolling
+        </div>
+      )}
+
       <style jsx global>{`
         /* Hide scrollbar for Chrome, Safari and Opera */
         .scrollbar-hide::-webkit-scrollbar {
