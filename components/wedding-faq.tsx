@@ -9,7 +9,7 @@ const faqData = [
   {
     question: "When is the RSVP deadline?",
     answer:
-      "The RSVP deadline is 1st September 2025. Please RSVP by then to ensure we have enough food and drinks for everyone.",
+      "The RSVP deadline is 31st July 2025. Please RSVP by then to ensure we have enough food and drinks for everyone.",
     keywords: ["RSVP", "deadline"],
   },
   {
@@ -33,7 +33,7 @@ const faqData = [
   {
     question: "What time should I arrive?",
     answer:
-      "Please plan to arrive by 12:00 PM for the 1:00 PM ceremony. This will give you time to find parking, sign the guest book, and find your seat. If you're attending the solemnization at 11:30 AM, please arrive by 11:15 AM.",
+      "Please plan to arrive by 12:15 PM for the 1:00 PM ceremony. This will give you time to find parking, sign the guest book, and find your seat. If you're attending the solemnization at 11:30 AM, please arrive by 11:15 AM.",
     keywords: ["time", "arrival", "schedule", "when", "ceremony", "solemnization", "punctual"],
   },
   {
@@ -45,7 +45,7 @@ const faqData = [
   {
     question: "Is there a hashtag for social media?",
     answer:
-      "Yes! Please use #WHYX when posting photos on social media. We'd love to see all your pictures and memories from our special day!",
+      "Yes! Please use #WHTYX when posting photos on social media. We'd love to see all your pictures and memories from our special day!",
     keywords: ["hashtag", "social media", "instagram", "facebook", "twitter", "sharing", "photos"],
   },
 ]

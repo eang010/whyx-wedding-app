@@ -20,11 +20,11 @@ const formSchema = z.object({
     .min(2, { message: "Name must be at least 2 characters." })
     .trim()
     .refine((val) => val.length > 0, { message: "Name is required" }),
-  email: z
+  phone: z
     .string()
     .trim()
-    .min(1, { message: "Email is required" })
-    .email({ message: "Please enter a valid email address." }),
+    .min(1, { message: "Phone number is required" })
+    .regex(/^[\+]?[0-9\s\-\(\)]{8,15}$/, { message: "Please enter a valid phone number" }),
   side: z.enum(["groom", "bride"], {
     required_error: "Please indicate whose side you are from.",
   }),
@@ -53,7 +53,7 @@ export default function RsvpForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      email: "",
+      phone: "",
       side: undefined,
       attending: "yes",
       attendingSolemnization: false,
@@ -79,7 +79,7 @@ export default function RsvpForm() {
       const params = new URLSearchParams({
         timestamp: new Date().toISOString(),
         name: data.name,
-        email: data.email,
+        phone: data.phone,
         side: data.side,
         attending: data.attending,
         attendingSolemnization: data.attendingSolemnization ? "Yes" : "No", 
@@ -170,19 +170,19 @@ export default function RsvpForm() {
               )}
             />
 
-            {/* Email Field */}
+            {/* Phone Field */}
             <FormField
               control={form.control}
-              name="email"
+              name="phone"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Email <span className="text-red-500">*</span>
+                    Phone Number <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      type="email"
-                      placeholder="Enter your email"
+                      type="tel"
+                      placeholder="Enter your phone number (e.g. 9123 4567 or +60 11-1234 5678)"
                       {...field}
                       disabled={isSubmitting}
                       aria-required="true"
