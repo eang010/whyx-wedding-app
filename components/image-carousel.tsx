@@ -89,9 +89,10 @@ export default function ImageCarousel() {
     const itemWidth = container.clientWidth * 0.85 // 85% width on mobile
     const scrollAmount = itemWidth * index
     
+    // Use instant scroll for auto-scroll to reduce lag
     container.scrollTo({
       left: scrollAmount,
-      behavior: 'smooth'
+      behavior: 'auto'
     })
     setCurrentIndex(index)
   }, [])
@@ -106,23 +107,30 @@ export default function ImageCarousel() {
 
       const nextIndex = (currentIndex + 1) % galleryImages.length
       scrollToIndex(nextIndex)
-    }, 3000) // Auto-scroll every 3 seconds
+    }, 4000) // Increased to 4 seconds for better performance
 
     return () => clearInterval(interval)
   }, [isAutoScrolling, isHovered, isTouchHeld, currentIndex, scrollToIndex, galleryImages.length])
 
-  // Update current index based on scroll position
+  // Update current index based on scroll position with throttling
   useEffect(() => {
     const container = scrollContainerRef.current
     if (!container) return
 
+    let ticking = false
     const handleScroll = () => {
-      const itemWidth = container.clientWidth * 0.85
-      const newIndex = Math.round(container.scrollLeft / itemWidth)
-      setCurrentIndex(Math.min(newIndex, galleryImages.length - 1))
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const itemWidth = container.clientWidth * 0.85
+          const newIndex = Math.round(container.scrollLeft / itemWidth)
+          setCurrentIndex(Math.min(newIndex, galleryImages.length - 1))
+          ticking = false
+        })
+        ticking = true
+      }
     }
 
-    container.addEventListener('scroll', handleScroll)
+    container.addEventListener('scroll', handleScroll, { passive: true })
     return () => container.removeEventListener('scroll', handleScroll)
   }, [galleryImages.length])
 
@@ -167,7 +175,13 @@ export default function ImageCarousel() {
 
         <div 
           ref={scrollContainerRef}
-          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-6 -mb-6 scroll-smooth"
+          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-6 -mb-6"
+          style={{ 
+            scrollBehavior: 'auto',
+            WebkitOverflowScrolling: 'auto', // Optimize for iOS
+            willChange: 'scroll-position', // Optimize for animations
+            transform: 'translateZ(0)' // Force hardware acceleration
+          }}
         >
           {galleryImages.map((image, index) => (
             <div
@@ -182,6 +196,9 @@ export default function ImageCarousel() {
                   className="object-cover transition-transform duration-300 group-hover/image:scale-105"
                   draggable="false"
                   priority={index < 3} // Prioritize loading first 3 images
+                  sizes="(max-width: 768px) 85vw, (max-width: 1024px) 45vw, 35vw"
+                  quality={85}
+                  loading={index < 3 ? "eager" : "lazy"}
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover/image:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover/image:translate-y-0 transition-transform duration-300">
