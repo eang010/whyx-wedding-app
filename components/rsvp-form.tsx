@@ -182,7 +182,7 @@ export default function RsvpForm() {
                   <FormControl>
                     <Input
                       type="tel"
-                      placeholder="Enter your phone number (e.g. 9123 4567 or +60 11-1234 5678)"
+                      placeholder="Enter your phone number"
                       {...field}
                       disabled={isSubmitting}
                       aria-required="true"
