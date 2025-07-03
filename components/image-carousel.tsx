@@ -51,6 +51,11 @@ const galleryImages = [
     caption: "Ah, the future is bright",
   },
   {
+    src: "/images/11.jpg",
+    alt: "Snowy day",
+    caption: "Cold but warm",
+  },
+  {
     src: "/images/10.jpg",
     alt: "You and I",
     caption: "You and I, together forever",
