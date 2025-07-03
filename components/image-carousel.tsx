@@ -89,10 +89,9 @@ export default function ImageCarousel() {
     const itemWidth = container.clientWidth * 0.85 // 85% width on mobile
     const scrollAmount = itemWidth * index
     
-    // Use instant scroll for auto-scroll to reduce lag
     container.scrollTo({
       left: scrollAmount,
-      behavior: 'auto'
+      behavior: 'smooth'
     })
     setCurrentIndex(index)
   }, [])
@@ -175,10 +174,9 @@ export default function ImageCarousel() {
 
         <div 
           ref={scrollContainerRef}
-          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-6 -mb-6"
+          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-6 -mb-6 scroll-smooth"
           style={{ 
-            scrollBehavior: 'auto',
-            WebkitOverflowScrolling: 'auto', // Optimize for iOS
+            WebkitOverflowScrolling: 'touch', // Smooth scrolling on iOS
             willChange: 'scroll-position', // Optimize for animations
             transform: 'translateZ(0)' // Force hardware acceleration
           }}
