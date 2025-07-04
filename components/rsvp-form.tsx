@@ -320,8 +320,8 @@ export default function RsvpForm() {
                           Would you like to attend the Solemnization ceremony?
                         </FormLabel>
                         <FormDescription>
-                          This is an optional, intimate ceremony for the signing of marriage documents (e.g., 11:00 AM -
-                          11:30 AM). Limited seating.
+                          This is an optional, intimate ceremony for the signing of marriage documents (11:30 AM -
+                          12:00 PM). Limited seating.
                         </FormDescription>
                       </div>
                     </FormItem>
