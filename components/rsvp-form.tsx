@@ -268,7 +268,7 @@ export default function RsvpForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Number of Additional Guests
+                        Number of Additional Guests (Optional)
                       </FormLabel>
                       <FormControl>
                         <Input
