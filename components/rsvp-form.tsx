@@ -35,9 +35,9 @@ const formSchema = z.object({
   guestCount: z
     .string()
     .trim()
-    .min(1, { message: "Number of guests is required" })
-    .refine((val) => !isNaN(Number(val)), { message: "Please enter a valid number" })
-    .refine((val) => Number(val) >= 0, { message: "Guest count cannot be negative" }),
+    .optional()
+    .refine((val) => !val || !isNaN(Number(val)), { message: "Please enter a valid number" })
+    .refine((val) => !val || Number(val) >= 0, { message: "Guest count cannot be negative" }),
   dietaryRestrictions: z.string().optional(),
   message: z.string().optional(),
 })
@@ -57,7 +57,7 @@ export default function RsvpForm() {
       side: undefined,
       attending: "yes",
       attendingSolemnization: false,
-      guestCount: "0",
+      guestCount: "",
       dietaryRestrictions: "",
       message: "",
     },
@@ -83,8 +83,8 @@ export default function RsvpForm() {
         side: data.side,
         attending: data.attending,
         attendingSolemnization: data.attendingSolemnization ? "Yes" : "No", 
-        guestCount: String(Number(data.guestCount)),
-        totalGuests: String(Number(data.guestCount) + (data.attending === "yes" ? 1 : 0)),
+        guestCount: String(Number(data.guestCount || 0)),
+        totalGuests: String(Number(data.guestCount || 0) + (data.attending === "yes" ? 1 : 0)),
         dietaryRestrictions: data.dietaryRestrictions || "",
         message: data.message || "",
       }).toString()
@@ -268,7 +268,7 @@ export default function RsvpForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Number of Additional Guests <span className="text-red-500">*</span>
+                        Number of Additional Guests
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -277,7 +277,18 @@ export default function RsvpForm() {
                           placeholder="0"
                           {...field}
                           disabled={isSubmitting}
-                          aria-required="true"
+                          onFocus={(e) => {
+                            // Clear the field on focus if it's empty or "0"
+                            if (e.target.value === "" || e.target.value === "0") {
+                              field.onChange("")
+                            }
+                          }}
+                          onBlur={(e) => {
+                            // If the field is empty on blur, set it to "0"
+                            if (e.target.value === "") {
+                              field.onChange("0")
+                            }
+                          }}
                         />
                       </FormControl>
                       <FormDescription>Guest count excludes yourself.</FormDescription>
