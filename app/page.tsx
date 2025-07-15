@@ -87,7 +87,7 @@ export default function Home() {
         </div>
 
         {/* Arrow Button at Bottom */}
-        <div className="absolute bottom-32 left-0 right-0 flex justify-center">
+        <div className="absolute bottom-28 left-0 right-0 flex justify-center">
           <button
             onClick={scrollToDetails}
             className="animate-bounce bg-white/20 backdrop-blur-sm p-3 rounded-full hover:bg-white/30 transition-colors"
