@@ -9,7 +9,7 @@ const faqData = [
   {
     question: "When is the RSVP deadline?",
     answer:
-      "The RSVP deadline is 14 September 2025. Please RSVP by then totember ensure we have enough food and drinks for everyone.",
+      "The RSVP deadline is 14 September 2025. Please RSVP by then to ensure we have enough food and drinks for everyone.",
     keywords: ["RSVP", "deadline"],
   },
   {
