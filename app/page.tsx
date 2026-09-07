@@ -36,18 +36,12 @@ export default function Home() {
     galleryRef.current?.scrollIntoView({ behavior: "smooth" })
   }
 
-  // Scroll detection effect
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY + window.innerHeight
-      const documentHeight = document.documentElement.scrollHeight
-      const threshold = 100 // Show arrow when within 100px of bottom
-      
-      setShowUpArrow(scrollPosition >= documentHeight - threshold)
-    }
+    const handleScroll = () => setShowUpArrow(window.scrollY > 80)
 
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    handleScroll()
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
   return (
@@ -127,16 +121,14 @@ export default function Home() {
         </section>
       </div>
 
-      {/* Up Arrow Button - Fixed position, bottom left, only shows at bottom */}
       {showUpArrow && (
         <div className="fixed bottom-6 left-6 z-50">
           <button
             onClick={scrollToCountdown}
-            className="bg-white shadow-md border border-gray-200 px-4 py-2 rounded-full hover:bg-gray-50 transition-colors flex items-center gap-2"
-            aria-label="Scroll to countdown"
+            className="animate-bounce bg-white shadow-md border border-gray-200 p-3 rounded-full hover:bg-gray-50 transition-colors"
+            aria-label="Back to top"
           >
-            <ChevronUp className="h-4 w-4 text-babyblue-dark" />
-            <span className="text-sm text-gray-700">Back to top</span>
+            <ChevronUp className="h-6 w-6 text-babyblue-dark" />
           </button>
         </div>
       )}
